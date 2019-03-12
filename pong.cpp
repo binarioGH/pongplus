@@ -10,11 +10,11 @@ class Paddle{
 private:
 	int x, y;
 	void impact(void);
-	void clean(void);
-	
+	void treeInLine(int character);
 public:
 	Paddle(int _x, int _y); 
     void randmove(void);
+    void clean(void);
     void drawPaddle(void);
     void move(void); 
     bool giveup = true;
@@ -33,21 +33,30 @@ void Paddle::impact(void){
 	}
 	return;
 }
-void Paddle::clean(){
-	gotoxy(x,y-1);printf(" ");
-	gotoxy(x,y);printf(" ");
-	gotoxy(x,y+1);printf(" ");
-	return; 
+void Paddle::treeInLine(int character){
+	int i = -1;
+	for(i;i<= 1;i++){
+		gotoxy(x,y+i);printf("%c", character);
+	}
+	return;
 }
 void Paddle::drawPaddle(void){
-	gotoxy(x,y+1);printf("%c", 219);
-	gotoxy(x,y);printf("%c",219);
-	gotoxy(x,y-1);printf("%c", 219);
-	return; 
+	Paddle::treeInLine(219);
+	return;
+}
+void Paddle::clean(void){
+	Paddle::treeInLine(32);
+	return;
 }
 void Paddle::randmove(void){
 	Paddle::clean();
-	y += rand() % 2 - 1;
+	int m  = rand() % 2;
+	if(m == 1){
+		y++;
+	}
+	else{
+		y--;
+	}
 	Paddle::impact();
 	Paddle::drawPaddle();
 	return;
