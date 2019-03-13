@@ -2,9 +2,17 @@
 #include <windows.h>
 #include <conio.h>
 #include <cstdio>
+
+#define UP 38
+#define DOWN 40
+#define LEFT 37
+#define RIGHT 39
+
+
 void gotoxy(int x, int y);
 void hideCursor(void);
 void drawBorders(void);
+void drawLine(int mn, int mx);
 
 class Paddle{
 private:
@@ -18,6 +26,7 @@ public:
     void drawPaddle(void);
     void move(void); 
     bool giveup = true;
+    char mode[10] = "easy";
 };
 
 Paddle::Paddle(int _x, int _y){
@@ -76,6 +85,7 @@ void Paddle::move(void){
 	Paddle::drawPaddle();
 	return;
 }
+void startGame(Paddle* rival);
 class Ball{
 private:
 	int x, y;
@@ -103,21 +113,67 @@ void Ball::changeDirection(int xc, int xy){
 	}
 	return;
 }
-
 int main(){
+	system("cls");
+	drawBorders();
+	gotoxy(36,5);printf("P O N G");
+	gotoxy(14,10);printf("ONE PLAYER");//10
+	gotoxy(36,10);printf("MULTIPLAYER");//12
+	gotoxy(59,10);printf("OPTIONS");//7
+	char key = 0;
+	int index = 0;
+	int change = index;
+	do{
+		if(kbhit()){
+			key = getch();
+			switch(key){
+				case LEFT:index-=1;break;
+				case RIGHT:index+=1;break;
+				case 'a':index-=1;break;
+				case 'd':index+= 1;break;
+			}
+		}
+		if(change != index){
+			switch(index){
+			    case 0:drawLine(14,22);break;
+			    case 1:drawLine(36,45);break;
+			    case 2:drawLine(59, 64);break;
+			    case 3:index = 0;break;
+			    case -1:index =2;break;
+			}
+			change = index;
+		}
+	if(change != index){
+		gotoxy(10,20);printf("%c",index);
+		change = index;	
+	}
+		
+	}while(key != 10);
+	return 0;
+}
+void drawLine(int mn, int mx){
+	int x = 12;
+	for(x;x<=68;x++){
+		gotoxy(x,11);printf(" ");
+	}
+	for(mn;mn<=mx+1;mn++){
+		gotoxy(mn, 11);printf("%c",196);
+	}
+}
+void startGame(Paddle* rival){
 	system("cls");
 	hideCursor();
 	drawBorders();
 	Paddle player_paddle (4, 10);
-	Paddle rival_paddle (74, 10);
+	
 	int ppoints = 0; //ppoints == player points;
 	int cpoints = 0; // cpoints == computer points
 	while(ppoints < 5 || cpoints < 5 || !player_paddle.giveup){
 		player_paddle.move();
-		rival_paddle.randmove();
+		rival->randmove();
 		Sleep(100);
 	}
-	return 0;
+	return;
 }
 
 void gotoxy(int x, int y){
