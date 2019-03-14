@@ -21,6 +21,8 @@ private:
 	void treeInLine(int character);
 public:
 	Paddle(int _x, int _y); 
+	int X(void){return x;}
+	int Y(void){return y;}
     void rivalmove(void);
     void clean(void);
     void drawPaddle(void);
@@ -106,30 +108,82 @@ void startGame(int m);
 class Ball{
 private:
 	int x, y;
-	int xd=1,yd=1;
+	int moveX =1, moveY=1;
+	void reload(void);
+	void changeDirection(void);
+	void point(void);
+	int y1, y2;
 public:
 	Ball(int _x, int _y);
-	void changeDirection(int xc, int xy);
+	void move(void);
+	void collition(void);
+	void getPaddleCoords(int py1, int py2);
+
 };
 Ball::Ball(int _x, int _y){
 	x = _x;
 	y = _y;
+	Ball::reload();
 }
-void Ball::changeDirection(int xc, int xy){
-	if(xd == 1){
-		xd = -1;
+void Ball::reload(void){
+	gotoxy(x,y);printf(" ");
+	x = 40;
+	y = 11;
+	int dmx = rand()%2, dmy = rand()%2;
+	if(dmx==0){
+		moveX *= -1;
 	}
-	else{
-		xd = 1;
+	if(dmy==0){
+		moveY *= -1;
 	}
-	if(yd == 1){
-		yd = -1;
+	gotoxy(x,y);printf("*");  
+	return;
+}
+void Ball::changeDirection(void){
+	moveX *= -1;
+	moveY *= -1;
+	return;
+}
+void Ball::move(void){
+	gotoxy(x,y);printf(" ");
+	x += moveX;
+	y += moveY;
+	Ball::collition();
+	gotoxy(x,y);printf("*");
+	return;
+}
+void Ball::collition(void){
+	if(y>=22 || y<=2){
+		moveY *=-1;
 	}
-	else{
-		yd = 1;
+	if(((y>=y1-1 && y<=y1+1) && x==4) || ((y>=y2-1 && y<=y2+1) && x == 76)){
+		changeDirection();
+	}
+	if(x==2 || x==76){
+		Ball:: point();
+		Ball::reload();
 	}
 	return;
 }
+void Ball::point(void){
+	system("cls");
+	gotoxy(28, 40);printf("P O I N T !");
+	int i = 0 ;
+	for(i;i<=12;i++){
+		gotoxy(28+i,39);printf("-");
+		gotoxy(28+i,41);printf("-");
+		Sleep(300);
+	}
+	system("cls");
+	drawBorders();
+	return;
+}
+void Ball::getPaddleCoords(int py1, int py2){
+	y1 = py1;
+	y2 = py2;
+	return;
+}
+
 int main(){
 	system("cls");
 	drawBorders();
@@ -154,7 +208,6 @@ int main(){
 			}
 		}
 		if(change != index){
-			gotoxy(10,20);printf("%i    ",index);
 			switch(index){
 				
 			    case 0:drawLine(14,22);break;
@@ -164,7 +217,6 @@ int main(){
 			    case -1:index =2;drawLine(59, 64);break;
 			}
 			change = index;
-			gotoxy(10,20);printf("%i    ",index);
 		}
 		
 
@@ -198,10 +250,12 @@ void startGame(int m){
 	Paddle player_paddle (4, 10);
 	Paddle rival(75,10);
 	rival.mode = m;
-	
+	Ball pelota(1,1);
 	int ppoints = 0; //ppoints == player points;
 	int cpoints = 0; // cpoints == computer points
 	while(ppoints < 5 || cpoints < 5 || !player_paddle.giveup){
+		pelota.getPaddleCoords(player_paddle.Y(),rival.Y());
+		pelota.move();
 		player_paddle.move();
 		rival.rivalmove();
 		Sleep(100);
