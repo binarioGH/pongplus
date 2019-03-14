@@ -21,12 +21,12 @@ private:
 	void treeInLine(int character);
 public:
 	Paddle(int _x, int _y); 
-    void randmove(void);
+    void rivalmove(void);
     void clean(void);
     void drawPaddle(void);
     void move(void); 
     bool giveup = true;
-    char mode[10] = "easy";
+    int mode = 0;
 };
 
 Paddle::Paddle(int _x, int _y){
@@ -57,18 +57,35 @@ void Paddle::clean(void){
 	Paddle::treeInLine(32);
 	return;
 }
-void Paddle::randmove(void){
+void Paddle::rivalmove(void){
 	Paddle::clean();
-	int m  = rand() % 2;
-	if(m == 1){
-		y++;
+	if(mode == 1){
+		int m  = rand() % 2;
+	    if(m == 1){
+		    y++;
+	    }
+	    else{
+		    y--;
+	    }
+	    
+	
 	}
-	else{
-		y--;
+	/*else if(mode == 2){
+		break;
+	}*/
+	else if(mode == 3){
+		if(kbhit()){
+			char key = getch();
+			switch(key){
+				case 'i':y-=1;break;
+				case 'k':y+=1;break;
+			}
+		}
 	}
 	Paddle::impact();
 	Paddle::drawPaddle();
 	return;
+	
 }
 void Paddle::move(void){
 
@@ -85,7 +102,7 @@ void Paddle::move(void){
 	Paddle::drawPaddle();
 	return;
 }
-void startGame(Paddle* rival);
+void startGame(int m);
 class Ball{
 private:
 	int x, y;
@@ -119,10 +136,12 @@ int main(){
 	gotoxy(36,5);printf("P O N G");
 	gotoxy(14,10);printf("ONE PLAYER");//10
 	gotoxy(36,10);printf("MULTIPLAYER");//12
-	gotoxy(59,10);printf("OPTIONS");//7
+	gotoxy(59,10);printf("EXTREME");//7
 	char key = 0;
-	int index = 0;
+	int index = 0, m=1;
 	int change = index;
+	bool done = true;
+	drawLine(14,22); 
 	do{
 		if(kbhit()){
 			key = getch();
@@ -131,24 +150,36 @@ int main(){
 				case RIGHT:index+=1;break;
 				case 'a':index-=1;break;
 				case 'd':index+= 1;break;
+				case 's':done = false;break;
 			}
 		}
 		if(change != index){
+			gotoxy(10,20);printf("%i    ",index);
 			switch(index){
+				
 			    case 0:drawLine(14,22);break;
 			    case 1:drawLine(36,45);break;
 			    case 2:drawLine(59, 64);break;
-			    case 3:index = 0;break;
-			    case -1:index =2;break;
+			    case 3:index = 0;drawLine(14,22);break;
+			    case -1:index =2;drawLine(59, 64);break;
 			}
 			change = index;
+			gotoxy(10,20);printf("%i    ",index);
 		}
-	if(change != index){
-		gotoxy(10,20);printf("%c",index);
-		change = index;	
-	}
 		
-	}while(key != 10);
+
+		
+	}while(done);
+	if(index == 0){
+		startGame(m);
+	}
+	else if(index == 1){
+		m = 3;
+		startGame(m);
+	}
+	else{
+		startGame(2);
+	}
 	return 0;
 }
 void drawLine(int mn, int mx){
@@ -160,17 +191,19 @@ void drawLine(int mn, int mx){
 		gotoxy(mn, 11);printf("%c",196);
 	}
 }
-void startGame(Paddle* rival){
+void startGame(int m){
 	system("cls");
 	hideCursor();
 	drawBorders();
 	Paddle player_paddle (4, 10);
+	Paddle rival(75,10);
+	rival.mode = m;
 	
 	int ppoints = 0; //ppoints == player points;
 	int cpoints = 0; // cpoints == computer points
 	while(ppoints < 5 || cpoints < 5 || !player_paddle.giveup){
 		player_paddle.move();
-		rival->randmove();
+		rival.rivalmove();
 		Sleep(100);
 	}
 	return;
