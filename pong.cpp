@@ -23,7 +23,7 @@ public:
 	Paddle(int _x, int _y); 
 	int X(void){return x;}
 	int Y(void){return y;}
-    void rivalmove(void);
+    void rivalmove(int ballY);
     void clean(void);
     void drawPaddle(void);
     void move(void); 
@@ -59,7 +59,7 @@ void Paddle::clean(void){
 	Paddle::treeInLine(32);
 	return;
 }
-void Paddle::rivalmove(void){
+void Paddle::rivalmove(int ballY){
 	Paddle::clean();
 	if(mode == 1){
 		int m  = rand() % 2;
@@ -72,9 +72,14 @@ void Paddle::rivalmove(void){
 	    
 	
 	}
-	/*else if(mode == 2){
-		break;
-	}*/
+	else if(mode == 2){
+		if(ballY>=y+1){
+			y++;
+		}
+		if(ballY<=y-1){
+			y--;
+		}
+	}
 	else if(mode == 3){
 		if(kbhit()){
 			char key = getch();
@@ -111,10 +116,11 @@ private:
 	int moveX =1, moveY=1;
 	void reload(void);
 	void changeDirection(void);
-	void point(void);
 	int y1, y2;
 public:
 	Ball(int _x, int _y);
+	int X(void){return x;}
+	int Y(void){return y;}
 	void move(void);
 	void collition(void);
 	void getPaddleCoords(int py1, int py2);
@@ -127,8 +133,8 @@ Ball::Ball(int _x, int _y){
 }
 void Ball::reload(void){
 	gotoxy(x,y);printf(" ");
-	x = 40;
-	y = 11;
+	x = rand()%42+38;
+	y = rand()%20+3;
 	int dmx = rand()%2, dmy = rand()%2;
 	if(dmx==0){
 		moveX *= -1;
@@ -156,28 +162,18 @@ void Ball::collition(void){
 	if(y>=22 || y<=2){
 		moveY *=-1;
 	}
-	if(((y>=y1-1 && y<=y1+1) && x==4) || ((y>=y2-1 && y<=y2+1) && x == 76)){
+	if((y>=y1-1 && y<=y1+1) && x==4){
+		changeDirection();
+	}
+	if((y>=y2-1 && y<=y2+1) && x == 76){
 		changeDirection();
 	}
 	if(x==2 || x==76){
-		Ball:: point();
 		Ball::reload();
 	}
 	return;
 }
-void Ball::point(void){
-	system("cls");
-	gotoxy(28, 40);printf("P O I N T !");
-	int i = 0 ;
-	for(i;i<=12;i++){
-		gotoxy(28+i,39);printf("-");
-		gotoxy(28+i,41);printf("-");
-		Sleep(300);
-	}
-	system("cls");
-	drawBorders();
-	return;
-}
+
 void Ball::getPaddleCoords(int py1, int py2){
 	y1 = py1;
 	y2 = py2;
@@ -257,7 +253,7 @@ void startGame(int m){
 		pelota.getPaddleCoords(player_paddle.Y(),rival.Y());
 		pelota.move();
 		player_paddle.move();
-		rival.rivalmove();
+		rival.rivalmove(pelota.Y());
 		Sleep(100);
 	}
 	return;
