@@ -133,7 +133,7 @@ Ball::Ball(int _x, int _y){
 }
 void Ball::reload(void){
 	gotoxy(x,y);printf(" ");
-	x = rand()%42+38;
+	x = rand()%41+39;
 	y = rand()%20+3;
 	int dmx = rand()%2, dmy = rand()%2;
 	if(dmx==0){
@@ -159,16 +159,16 @@ void Ball::move(void){
 	return;
 }
 void Ball::collition(void){
-	if(y>=22 || y<=2){
+	if(y>=21 || y<=3){
 		moveY *=-1;
 	}
 	if((y>=y1-1 && y<=y1+1) && x==4){
 		changeDirection();
 	}
-	if((y>=y2-1 && y<=y2+1) && x == 76){
+	if((y>=y2-1 && y<=y2+1) && x == 75){
 		changeDirection();
 	}
-	if(x==2 || x==76){
+	if(x==3 || x==75){
 		Ball::reload();
 	}
 	return;
@@ -187,6 +187,9 @@ int main(){
 	gotoxy(14,10);printf("ONE PLAYER");//10
 	gotoxy(36,10);printf("MULTIPLAYER");//12
 	gotoxy(59,10);printf("EXTREME");//7
+	gotoxy(15,15);printf("[s] = done");
+	gotoxy(15,16);printf("[a] = <-");
+	gotoxy(15,17);printf("[d] = ->");
 	char key = 0;
 	int index = 0, m=1;
 	int change = index;
